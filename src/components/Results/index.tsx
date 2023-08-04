@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import sampleData, { ResultType } from "./sample-data";
 import Result from "./Result";
-import { useMemo } from "react";
+import { useContext, useEffect, useMemo, useRef } from "react";
 import NoResult from "./NoResult";
+import { MapContext } from "../../layouts/GoogleMap";
+import bbox from "@turf/bbox";
 
 const ResultsContainer = styled.div`
   background-color: white;
@@ -32,7 +34,7 @@ const ResultsBody = styled.ul`
   max-height: ${68 * 8}px;
   overflow-y: auto;
   padding: 8px 0;
-  
+
   & > li {
     box-sizing: border-box;
     height: 68px;
@@ -41,18 +43,61 @@ const ResultsBody = styled.ul`
 `;
 
 type ResultsProps = {
-  onSelectResult: (result: ResultType) => void
+  onSelectResult: (result: ResultType) => void;
   searchValue: string;
 };
 
 export default function Results({ onSelectResult, searchValue }: ResultsProps) {
+  const { map } = useContext(MapContext);
+
   const results: ResultType[] = useMemo(
     () =>
-      sampleData.filter(({ name }) =>
-        name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
-      ),
+      searchValue
+        ? sampleData.filter(({ name }) =>
+            name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+          )
+        : [],
     [searchValue]
   );
+
+  const markersRef = useRef<google.maps.Marker[]>([]);
+
+  useEffect(() => {
+    if (map) {
+      const markers = markersRef.current;
+
+      markers.forEach((marker) => marker.setMap(null));
+
+      const newMarkers = results.map((result) => {
+        const position = new google.maps.LatLng(
+          result.location.lat,
+          result.location.lon
+        );
+
+        return new google.maps.Marker({
+          position,
+          map,
+        });
+      });
+
+      if (newMarkers.length) {
+        const bounds = bbox({
+          type: "LineString",
+          coordinates: results.map(({ location: { lat, lon } }) => [lat, lon]),
+        });
+
+        const latLngBounds = new google.maps.LatLngBounds(
+          new google.maps.LatLng(bounds[0], bounds[1]),
+          new google.maps.LatLng(bounds[2], bounds[3])
+        );
+
+        map.fitBounds(latLngBounds);
+        if (newMarkers.length === 1) map.setZoom(15);
+      }
+
+      markersRef.current = newMarkers;
+    }
+  }, [results, map]);
 
   if (!searchValue) return null;
   return (
@@ -62,7 +107,9 @@ export default function Results({ onSelectResult, searchValue }: ResultsProps) {
       }:`}</ResultsHeader>
       <ResultsBody>
         {results.length ? (
-          results.map((result) => <Result key={result.id} result={result} onClick={onSelectResult} />)
+          results.map((result) => (
+            <Result key={result.id} result={result} onClick={onSelectResult} />
+          ))
         ) : (
           <NoResult />
         )}
