@@ -1,4 +1,6 @@
 import styled from "styled-components";
+import Searchbar from "../../components/Searchbar";
+import { ChangeEventHandler, useCallback, useState } from "react";
 
 const UIOverlayContainer = styled.div`
   box-sizing: border-box;
@@ -15,9 +17,20 @@ const UIOverlayContainer = styled.div`
 `;
 
 export default function UIOverlay() {
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleSearchOnChange = useCallback<
+    ChangeEventHandler<HTMLInputElement>
+  >(
+    (e) => {
+      setSearchValue(e.target.value);
+    },
+    [setSearchValue]
+  );
+
   return (
     <UIOverlayContainer>
-        Overlay
+      <Searchbar value={searchValue} onChange={handleSearchOnChange} />
     </UIOverlayContainer>
   );
 }
