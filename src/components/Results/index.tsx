@@ -1,10 +1,9 @@
 import styled from "styled-components";
 import sampleData, { ResultType } from "./sample-data";
 import Result from "./Result";
-import { useContext, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo, useState } from "react";
 import NoResult from "./NoResult";
-import { MapContext } from "../../layouts/GoogleMap";
-import bbox from "@turf/bbox";
+import ResultsMapManager from "./ResultsMapManager";
 
 const ResultsContainer = styled.div`
   background-color: white;
@@ -45,11 +44,14 @@ const ResultsBody = styled.ul`
 type ResultsProps = {
   onSelectResult: (result: ResultType) => void;
   searchValue: string;
+  selectedResult: ResultType | null;
 };
 
-export default function Results({ onSelectResult, searchValue }: ResultsProps) {
-  const { map } = useContext(MapContext);
-
+export default function Results({
+  onSelectResult,
+  searchValue,
+  selectedResult,
+}: ResultsProps) {
   const results: ResultType[] = useMemo(
     () =>
       searchValue
@@ -60,60 +62,46 @@ export default function Results({ onSelectResult, searchValue }: ResultsProps) {
     [searchValue]
   );
 
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const [hoveredResult, setHoveredResult] = useState<ResultType | null>(null);
 
-  useEffect(() => {
-    if (map) {
-      const markers = markersRef.current;
+  const handleSetHoveredResult = useCallback<(result: ResultType) => void>(
+    (result) => {
+      setHoveredResult(result);
+    },
+    []
+  );
 
-      markers.forEach((marker) => marker.setMap(null));
+  const handleUnsetHoveredResult = useCallback(() => {
+    setHoveredResult(null);
+  }, []);
 
-      const newMarkers = results.map((result) => {
-        const position = new google.maps.LatLng(
-          result.location.lat,
-          result.location.lon
-        );
-
-        return new google.maps.Marker({
-          position,
-          map,
-        });
-      });
-
-      if (newMarkers.length) {
-        const bounds = bbox({
-          type: "LineString",
-          coordinates: results.map(({ location: { lat, lon } }) => [lat, lon]),
-        });
-
-        const latLngBounds = new google.maps.LatLngBounds(
-          new google.maps.LatLng(bounds[0], bounds[1]),
-          new google.maps.LatLng(bounds[2], bounds[3])
-        );
-
-        map.fitBounds(latLngBounds);
-        if (newMarkers.length === 1) map.setZoom(15);
-      }
-
-      markersRef.current = newMarkers;
-    }
-  }, [results, map]);
-
-  if (!searchValue) return null;
   return (
-    <ResultsContainer>
-      <ResultsHeader>{`Found ${results.length} Result${
-        results.length === 1 ? "" : "s"
-      }:`}</ResultsHeader>
-      <ResultsBody>
-        {results.length ? (
-          results.map((result) => (
-            <Result key={result.id} result={result} onClick={onSelectResult} />
-          ))
-        ) : (
-          <NoResult />
-        )}
-      </ResultsBody>
-    </ResultsContainer>
+    <ResultsMapManager
+      results={results}
+      activeResult={selectedResult ?? hoveredResult}
+    >
+      {!!searchValue && (
+        <ResultsContainer>
+          <ResultsHeader>{`Found ${results.length} Result${
+            results.length === 1 ? "" : "s"
+          }:`}</ResultsHeader>
+          <ResultsBody>
+            {results.length ? (
+              results.map((result) => (
+                <Result
+                  key={result.id}
+                  onClick={onSelectResult}
+                  onMouseOut={handleUnsetHoveredResult}
+                  onMouseOver={handleSetHoveredResult}
+                  result={result}
+                />
+              ))
+            ) : (
+              <NoResult />
+            )}
+          </ResultsBody>
+        </ResultsContainer>
+      )}
+    </ResultsMapManager>
   );
 }
