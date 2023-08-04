@@ -1,4 +1,4 @@
-import GoogleMap from "./components/GoogleMap";
+import GoogleMap from "./layouts/GoogleMap";
 import UIOverlay from "./layouts/UIOverlay";
 
 export default function App() {
