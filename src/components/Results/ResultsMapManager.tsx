@@ -14,12 +14,14 @@ import iconPin from "!raw-loader!../../assets/svg/icon-pin.svg";
 type MapManagerProps = {
   results: ResultType[];
   activeResult: ResultType | null;
+  onSelectResult: (result: ResultType) => void;
 };
 
 export default function ResultsMapManager({
-  results,
   activeResult,
   children,
+  onSelectResult,
+  results,
 }: PropsWithChildren<MapManagerProps>) {
   const { map } = useContext(MapContext);
 
@@ -65,6 +67,8 @@ export default function ResultsMapManager({
           position,
         });
 
+        marker.addListener("click", () => onSelectResult(result));
+
         if (pinIconSvgAttrs)
           marker.setIcon({
             fillColor: "#5281f7",
@@ -89,7 +93,7 @@ export default function ResultsMapManager({
 
       markersRef.current = newMarkers;
     }
-  }, [results, map, pinIconSvgAttrs]);
+  }, [results, map, pinIconSvgAttrs, onSelectResult]);
 
   useEffect(() => {
     if (map) {

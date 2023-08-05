@@ -77,6 +77,7 @@ export default function Results({
 
   return (
     <ResultsMapManager
+      onSelectResult={onSelectResult}
       results={results}
       activeResult={selectedResult ?? hoveredResult}
     >
