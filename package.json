@@ -2,6 +2,7 @@
   "name": "map-app",
   "version": "0.1.0",
   "private": false,
+  "homepage": "https://masonanders.github.io/map-app",
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.2",
     "@turf/bbox": "^6.5.0",
@@ -11,6 +12,8 @@
     "styled-components": "^5.3.9"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -35,11 +38,13 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/gh-pages": "^3.2.1",
     "@types/google.maps": "^3.53.5",
     "@types/node": "^16.18.39",
     "@types/react": "^18.2.18",
     "@types/react-dom": "^18.2.7",
     "@types/styled-components": "^5.1.26",
+    "gh-pages": "^5.0.0",
     "raw-loader": "^4.0.2",
     "typescript": "^4.9.5"
   }
