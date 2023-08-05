@@ -44,14 +44,9 @@ const ResultsBody = styled.ul`
 type ResultsProps = {
   onSelectResult: (result: ResultType) => void;
   searchValue: string;
-  selectedResult: ResultType | null;
 };
 
-export default function Results({
-  onSelectResult,
-  searchValue,
-  selectedResult,
-}: ResultsProps) {
+export default function Results({ onSelectResult, searchValue }: ResultsProps) {
   const results: ResultType[] = useMemo(
     () =>
       searchValue
@@ -65,24 +60,17 @@ export default function Results({
     [searchValue]
   );
 
-  const [hoveredResult, setHoveredResult] = useState<ResultType | null>(null);
+  const [focusedResult, setFocusedResult] = useState<ResultType | null>(null);
 
-  const handleSetHoveredResult = useCallback<(result: ResultType) => void>(
-    (result) => {
-      setHoveredResult(result);
-    },
-    []
-  );
-
-  const handleUnsetHoveredResult = useCallback(() => {
-    setHoveredResult(null);
+  const handleSetActiveResult = useCallback((result: ResultType) => {
+    setFocusedResult(result);
   }, []);
 
   return (
     <ResultsMapManager
       onSelectResult={onSelectResult}
       results={results}
-      activeResult={selectedResult ?? hoveredResult}
+      focusedResult={focusedResult}
     >
       {!!searchValue && (
         <ResultsContainer>
@@ -94,9 +82,7 @@ export default function Results({
               results.map((result) => (
                 <Result
                   key={result.id}
-                  onClick={onSelectResult}
-                  onMouseOut={handleUnsetHoveredResult}
-                  onMouseOver={handleSetHoveredResult}
+                  onClick={handleSetActiveResult}
                   result={result}
                 />
               ))

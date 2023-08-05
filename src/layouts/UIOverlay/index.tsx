@@ -20,13 +20,9 @@ const UIOverlayContainer = styled.div`
 
 type UIOverlayProps = {
   onSelectResult: (result: ResultType) => void;
-  selectedResult: ResultType | null;
 };
 
-export default function UIOverlay({
-  onSelectResult,
-  selectedResult,
-}: UIOverlayProps) {
+export default function UIOverlay({ onSelectResult }: UIOverlayProps) {
   const [searchValue, setSearchValue] = useState("");
 
   const handleSearchOnChange = useCallback<
@@ -41,11 +37,7 @@ export default function UIOverlay({
   return (
     <UIOverlayContainer>
       <Searchbar value={searchValue} onChange={handleSearchOnChange} />
-      <Results
-        searchValue={searchValue}
-        selectedResult={selectedResult}
-        onSelectResult={onSelectResult}
-      />
+      <Results searchValue={searchValue} onSelectResult={onSelectResult} />
     </UIOverlayContainer>
   );
 }

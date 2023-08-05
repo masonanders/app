@@ -20,10 +20,7 @@ export default function App() {
     <MapContextProvider>
       <div>
         <GoogleMap />
-        <UIOverlay
-          onSelectResult={handleSelectResult}
-          selectedResult={selectedResult}
-        />
+        <UIOverlay onSelectResult={handleSelectResult} />
         <ResultModal onClose={handleCloseModal} result={selectedResult} />
       </div>
     </MapContextProvider>

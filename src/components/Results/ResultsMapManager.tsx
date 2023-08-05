@@ -13,12 +13,12 @@ import iconPin from "!raw-loader!../../assets/svg/icon-pin.svg";
 
 type MapManagerProps = {
   results: ResultType[];
-  activeResult: ResultType | null;
+  focusedResult: ResultType | null;
   onSelectResult: (result: ResultType) => void;
 };
 
 export default function ResultsMapManager({
-  activeResult,
+  focusedResult,
   children,
   onSelectResult,
   results,
@@ -97,13 +97,13 @@ export default function ResultsMapManager({
 
   useEffect(() => {
     if (map) {
-      if (activeResult) {
-        setMapBoundsResult(map, activeResult);
+      if (focusedResult) {
+        setMapBoundsResult(map, focusedResult);
       } else if (markersRef.current.length) {
         setMapBoundsMarkers(map, markersRef.current);
       }
     }
-  }, [map, activeResult]);
+  }, [map, focusedResult]);
 
   return <>{children}</>;
 }
@@ -125,7 +125,7 @@ function setMapBoundsMarkers(
     new google.maps.LatLng(bounds[2], bounds[3])
   );
 
-  map.fitBounds(latLngBounds);
+  map.fitBounds(latLngBounds, 200);
   if (markers.length === 1) map.setZoom(15);
 }
 
