@@ -45,6 +45,17 @@ export default function GoogleMap() {
           scrollwheel: false,
           zoom: 8,
           disableDefaultUI: true,
+          styles: [
+            {
+              featureType: "poi.business",
+              stylers: [{ visibility: "off" }],
+            },
+            {
+              featureType: "poi",
+              elementType: "labels.icon",
+              stylers: [{ visibility: "off" }],
+            },
+          ],
         });
 
         setMap(map);
