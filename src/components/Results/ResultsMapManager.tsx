@@ -1,7 +1,15 @@
-import { PropsWithChildren, useContext, useEffect, useRef } from "react";
+import {
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { MapContext } from "../../layouts/GoogleMap";
 import { ResultType } from "./sample-data";
 import bbox from "@turf/bbox";
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import iconPin from "!raw-loader!../../assets/svg/icon-pin.svg";
 
 type MapManagerProps = {
   results: ResultType[];
@@ -17,6 +25,30 @@ export default function ResultsMapManager({
 
   const markersRef = useRef<google.maps.Marker[]>([]);
 
+  // Get path from raw svg - courtesy of https://stackoverflow.com/questions/57247916/how-to-access-path-data-of-an-svg-file-and-use-it-as-google-maps-marker
+  const pinIconSvgAttrs = useMemo<{
+    path: string;
+    height: number;
+    width: number;
+  } | null>(() => {
+    const parser = new DOMParser();
+    const parsedSvg = parser.parseFromString(iconPin, "image/svg+xml");
+
+    const svgPath = parsedSvg.querySelector("path")?.getAttribute("d");
+    const svgWidth = parsedSvg.querySelector("svg")?.getAttribute("width");
+    const svgHeight = parsedSvg.querySelector("svg")?.getAttribute("height");
+
+    if (svgPath != null && svgWidth != null && svgHeight != null) {
+      return {
+        path: svgPath,
+        width: Number(svgWidth),
+        height: Number(svgHeight),
+      };
+    } else {
+      return null;
+    }
+  }, []);
+
   useEffect(() => {
     if (map) {
       const markers = markersRef.current;
@@ -29,10 +61,26 @@ export default function ResultsMapManager({
           result.location.lon
         );
 
-        return new google.maps.Marker({
+        const marker = new google.maps.Marker({
           position,
-          map,
         });
+
+        if (pinIconSvgAttrs)
+          marker.setIcon({
+            fillColor: "#5281f7",
+            fillOpacity: 1,
+            strokeWeight: 0,
+            scale: 2.25,
+            path: pinIconSvgAttrs.path,
+            anchor: new google.maps.Point(
+              pinIconSvgAttrs.width / 2,
+              pinIconSvgAttrs.height
+            ),
+          });
+
+        marker.setMap(map);
+
+        return marker;
       });
 
       if (newMarkers.length) {
@@ -41,7 +89,7 @@ export default function ResultsMapManager({
 
       markersRef.current = newMarkers;
     }
-  }, [results, map]);
+  }, [results, map, pinIconSvgAttrs]);
 
   useEffect(() => {
     if (map) {
