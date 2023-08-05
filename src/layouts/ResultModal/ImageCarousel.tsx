@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { ResultType } from "../../components/Results/sample-data";
+import { ResultType } from "../../data/sample-data";
 import { useState } from "react";
 
 const ImageCarouselContainer = styled.div`

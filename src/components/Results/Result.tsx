@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { ResultType } from "./sample-data";
+import { ResultType } from "../../data/sample-data";
 import { ResultCoords, ResultIcon, ResultTitle } from "../Result";
 
 const ResultContainer = styled.li`

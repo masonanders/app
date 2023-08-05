@@ -6,7 +6,7 @@ import {
   ResultCoordsContainer as _ResultCoordsContainer,
   ResultTitleContainer as _ResultTitleContainer,
 } from "../../components/Result";
-import { ResultType } from "../../components/Results/sample-data";
+import { ResultType } from "../../data/sample-data";
 
 const HeaderContainer = styled.div`
   display: flex;

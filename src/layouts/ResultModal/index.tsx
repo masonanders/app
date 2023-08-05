@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { ResultType } from "../../components/Results/sample-data";
+import { ResultType } from "../../data/sample-data";
 import ModalHeader from "./ModalHeader";
 import ModalBody from "./ModalBody";
 

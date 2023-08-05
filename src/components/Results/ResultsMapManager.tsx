@@ -6,7 +6,7 @@ import {
   useRef,
 } from "react";
 import { MapContext } from "../../layouts/GoogleMap";
-import { ResultType } from "./sample-data";
+import { ResultType } from "../../data/sample-data";
 import bbox from "@turf/bbox";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import iconPin from "!raw-loader!../../assets/svg/icon-pin.svg";

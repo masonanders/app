@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import sampleData, { ResultType } from "./sample-data";
+import sampleData, { ResultType } from "../../data/sample-data";
 import Result from "./Result";
 import { useCallback, useMemo, useState } from "react";
 import NoResult from "./NoResult";

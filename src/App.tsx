@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import GoogleMap, { MapContextProvider } from "./layouts/GoogleMap";
 import UIOverlay from "./layouts/UIOverlay";
-import { ResultType } from "./components/Results/sample-data";
+import { ResultType } from "./data/sample-data";
 import ResultModal from "./layouts/ResultModal";
 
 export default function App() {

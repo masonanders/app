@@ -1,6 +1,6 @@
 import styled, { StyledComponent } from "styled-components";
 import { ReactComponent as IconPinSVG } from "../../assets/svg/icon-pin.svg";
-import { ResultType } from "../Results/sample-data";
+import { ResultType } from "../../data/sample-data";
 
 export const ResultIconContainer = styled.div`
   align-items: center;

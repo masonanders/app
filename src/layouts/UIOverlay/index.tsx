@@ -2,7 +2,7 @@ import styled from "styled-components";
 import Searchbar from "../../components/Searchbar";
 import { ChangeEventHandler, useCallback, useState } from "react";
 import Results from "../../components/Results";
-import { ResultType } from "../../components/Results/sample-data";
+import { ResultType } from "../../data/sample-data";
 
 const UIOverlayContainer = styled.div`
   box-sizing: border-box;
