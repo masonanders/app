@@ -56,7 +56,10 @@ export default function Results({
     () =>
       searchValue
         ? sampleData.filter(({ name }) =>
-            name.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
+            name
+              .toLocaleLowerCase()
+              .split(" ")
+              .some((word) => word.startsWith(searchValue.toLocaleLowerCase()))
           )
         : [],
     [searchValue]
