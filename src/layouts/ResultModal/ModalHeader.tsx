@@ -7,6 +7,7 @@ import {
   ResultTitleContainer as _ResultTitleContainer,
 } from "../../components/Result";
 import { ResultType } from "../../data/sample-data";
+import palette from "../../theme/palette";
 
 const HeaderContainer = styled.div`
   display: flex;
@@ -34,7 +35,7 @@ const ResultCoordsContainer = styled(_ResultCoordsContainer)`
 `;
 
 const Button = styled.button`
-  background-color: #5281f7;
+  background-color: ${palette.primary()};
   border-radius: 4px;
   border: none;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
@@ -47,11 +48,11 @@ const Button = styled.button`
   padding-right: 24px;
 
   &:hover {
-    background-color: #4e7bec;
+    background-color: ${palette.primary("dark")};
   }
 
   &:active {
-    background-color: #4b75e1;
+    background-color: ${palette.primary("darker")};
   }
 `;
 

@@ -4,6 +4,7 @@ import Result from "./Result";
 import { useCallback, useMemo, useState } from "react";
 import NoResult from "./NoResult";
 import ResultsMapManager from "./ResultsMapManager";
+import palette from "../../theme/palette";
 
 const ResultsContainer = styled.div`
   background-color: white;
@@ -19,7 +20,7 @@ const ResultsContainer = styled.div`
 `;
 
 const ResultsHeader = styled.div`
-  background-color: #5281f7;
+  background-color: ${palette.primary()};
   border-bottom-color: darkgray;
   border-bottom-style: solid;
   border-bottom-width: 1px;

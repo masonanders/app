@@ -10,6 +10,7 @@ import { ResultType } from "../../data/sample-data";
 import bbox from "@turf/bbox";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import iconPin from "!raw-loader!../../assets/svg/icon-pin.svg";
+import palette from "../../theme/palette";
 
 type MapManagerProps = {
   results: ResultType[];
@@ -71,7 +72,7 @@ export default function ResultsMapManager({
 
         if (pinIconSvgAttrs)
           marker.setIcon({
-            fillColor: "#5281f7",
+            fillColor: palette.primary(),
             fillOpacity: 1,
             strokeWeight: 0,
             scale: 2.25,
