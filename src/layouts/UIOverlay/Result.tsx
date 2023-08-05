@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { ResultType } from "../../data/sample-data";
-import { ResultCoords, ResultIcon, ResultTitle } from "../Result";
+import { ResultCoords, ResultIcon, ResultTitle } from "../../components/Result";
 
 const ResultContainer = styled.li`
   column-gap: 16px;

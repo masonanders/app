@@ -5,7 +5,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { MapContext } from "../../layouts/GoogleMap";
+import { MapContext } from "../GoogleMap";
 import { ResultType } from "../../data/sample-data";
 import bbox from "@turf/bbox";
 // eslint-disable-next-line import/no-webpack-loader-syntax

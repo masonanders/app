@@ -1,7 +1,7 @@
 import styled from "styled-components";
-import Searchbar from "../../components/Searchbar";
+import Searchbar from "./Searchbar";
 import { ChangeEventHandler, useCallback, useState } from "react";
-import Results from "../../components/Results";
+import Results from "./Results";
 import { ResultType } from "../../data/sample-data";
 
 const UIOverlayContainer = styled.div`
