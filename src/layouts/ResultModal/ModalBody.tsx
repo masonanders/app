@@ -2,12 +2,13 @@ import styled from "styled-components";
 import { ResultType } from "../../data/sample-data";
 import Description from "./Description";
 import ImageCarousel from "./ImageCarousel";
+import Divider from "../../components/Divider";
 
 const BodyContainer = styled.div`
-  border-top-color: #e6e6e6;
-  border-top-style: solid;
-  border-top-width: 2px;
+  display: flex;
+  flex-direction: column;
   padding: 20px 12px 12px;
+  row-gap: 48px;
 `;
 
 type ModalBodyType = {
@@ -17,9 +18,12 @@ type ModalBodyType = {
 export default function ModalBody({ result }: ModalBodyType) {
   if (!result.details?.description || !result.images?.length) return null;
   return (
-    <BodyContainer>
-      <Description result={result} />
-      <ImageCarousel result={result} />
-    </BodyContainer>
+    <>
+      <Divider />
+      <BodyContainer>
+        <Description result={result} />
+        <ImageCarousel result={result} />
+      </BodyContainer>
+    </>
   );
 }

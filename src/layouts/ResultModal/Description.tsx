@@ -2,7 +2,6 @@ import styled from "styled-components";
 import { ResultType } from "../../data/sample-data";
 
 const DescriptionContainer = styled.div`
-  margin-bottom: 48px;
   padding-left: 4px;
 `;
 
