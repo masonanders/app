@@ -1,28 +1,19 @@
-import { useCallback, useState } from "react";
-import GoogleMap, { MapContextProvider } from "./layouts/GoogleMap";
-import UIOverlay from "./layouts/UIOverlay";
-import { ResultType } from "./data/sample-data";
+import GoogleMap from "./layouts/GoogleMap";
+import SearchOverlay from "./layouts/SearchOverlay";
 import ResultModal from "./layouts/ResultModal";
+import { MapContextProvider } from "./contexts/GoogleMapContext";
+import { ResultContextProvider } from "./contexts/ResultContext";
 
 export default function App() {
-  const [selectedResult, setSelectedResult] = useState<ResultType | null>(null);
-
-  const handleSelectResult = useCallback<(result: ResultType) => void>(
-    (result) => {
-      setSelectedResult(result);
-    },
-    []
-  );
-
-  const handleCloseModal = useCallback(() => setSelectedResult(null), []);
-
   return (
     <MapContextProvider>
-      <div>
-        <GoogleMap />
-        <UIOverlay onSelectResult={handleSelectResult} />
-        <ResultModal onClose={handleCloseModal} result={selectedResult} />
-      </div>
+      <ResultContextProvider>
+        <div>
+          <GoogleMap />
+          <SearchOverlay />
+          <ResultModal />
+        </div>
+      </ResultContextProvider>
     </MapContextProvider>
   );
 }

@@ -5,52 +5,58 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { MapContext } from "../GoogleMap";
 import { ResultType } from "../../data/sample-data";
 import bbox from "@turf/bbox";
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import iconPin from "!raw-loader!../../assets/svg/icon-pin.svg";
+import rawIconPinSVG from "!raw-loader!../../assets/svg/icon-pin.svg";
 import palette from "../../theme/palette";
+import { MapContext } from "../../contexts/GoogleMapContext";
+import { ResultContext } from "../../contexts/ResultContext";
 
 type MapManagerProps = {
-  focusedResult: ResultType | null;
-  hoveredResult: ResultType | null;
-  onSelectResult: (result: ResultType) => void;
   results: ResultType[];
 };
 
-type MarkerWithResultId = { id: ResultType["id"]; marker: google.maps.Marker };
+type MarkerWithResultId = {
+  id: ResultType["id"];
+  marker: google.maps.Marker;
+};
 
 export default function ResultsMapManager({
   children,
-  focusedResult,
-  hoveredResult,
-  onSelectResult,
   results,
 }: PropsWithChildren<MapManagerProps>) {
+  const { focusedMapResult, hoveredListResult, setModalResult } =
+    useContext(ResultContext);
   const { map } = useContext(MapContext);
 
-  const markersRef = useRef<MarkerWithResultId[]>([]);
-
-  // Get path from raw svg - courtesy of https://stackoverflow.com/questions/57247916/how-to-access-path-data-of-an-svg-file-and-use-it-as-google-maps-marker
   const iconConfig = useMemo<google.maps.Symbol | null>(() => {
     if (map) {
+      // Get path from raw svg - courtesy of https://stackoverflow.com/questions/57247916/how-to-access-path-data-of-an-svg-file-and-use-it-as-google-maps-marker
       const parser = new DOMParser();
-      const parsedSvg = parser.parseFromString(iconPin, "image/svg+xml");
+      const parsedSvg = parser.parseFromString(rawIconPinSVG, "image/svg+xml");
 
-      const svgPath = parsedSvg.querySelector("path")?.getAttribute("d");
-      const svgWidth = parsedSvg.querySelector("svg")?.getAttribute("width");
-      const svgHeight = parsedSvg.querySelector("svg")?.getAttribute("height");
+      const svgPathAttr = parsedSvg.querySelector("path")?.getAttribute("d");
+      const svgWidthAttr = parsedSvg
+        .querySelector("svg")
+        ?.getAttribute("width");
+      const svgHeightAttr = parsedSvg
+        .querySelector("svg")
+        ?.getAttribute("height");
 
-      if (svgPath != null && svgWidth != null && svgHeight != null) {
-        const width = Number(svgWidth);
-        const height = Number(svgHeight);
+      if (
+        svgPathAttr != null &&
+        svgWidthAttr != null &&
+        svgHeightAttr != null
+      ) {
+        const width = Number(svgWidthAttr);
+        const height = Number(svgHeightAttr);
 
         return {
           anchor: new google.maps.Point(width / 2, height),
           fillColor: palette.primary(),
           fillOpacity: 1,
-          path: svgPath,
+          path: svgPathAttr,
           scale: 2.25,
           strokeWeight: 0,
         };
@@ -59,6 +65,9 @@ export default function ResultsMapManager({
     return null;
   }, [map]);
 
+  const markersRef = useRef<MarkerWithResultId[]>([]);
+
+  // Handle create new markers when results updates
   useEffect(() => {
     if (map) {
       const markers = markersRef.current;
@@ -76,7 +85,7 @@ export default function ResultsMapManager({
           icon: iconConfig,
         });
 
-        marker.addListener("click", () => onSelectResult(result));
+        marker.addListener("click", () => setModalResult(result));
         marker.setMap(map);
 
         return { id: result.id, marker };
@@ -88,31 +97,37 @@ export default function ResultsMapManager({
 
       markersRef.current = newMarkers;
     }
-  }, [results, map, iconConfig, onSelectResult]);
+  }, [map, iconConfig, results, setModalResult]);
 
+  // Handle updates to focusedMapResult
   useEffect(() => {
     if (map) {
-      const markersList = Object.values(markersRef.current);
-      if (focusedResult) {
-        setMapBoundsResult(map, focusedResult);
-      } else if (markersList.length) {
-        setMapBoundsMarkers(map, markersList);
+      const markers = markersRef.current;
+
+      if (focusedMapResult) {
+        setMapBoundsResult(map, focusedMapResult);
+      } else if (markers.length) {
+        setMapBoundsMarkers(map, markers);
       }
     }
-  }, [map, focusedResult]);
+  }, [map, focusedMapResult]);
 
+  // Handle updates to hoveredListResult
   useEffect(() => {
     if (map && iconConfig) {
       const markers = markersRef.current;
+
       markers.forEach(({ id, marker }) =>
         marker.setIcon({
           ...iconConfig,
           fillColor:
-            id === hoveredResult?.id ? palette.secondary() : palette.primary(),
+            id === hoveredListResult?.id
+              ? palette.secondary()
+              : palette.primary(),
         })
       );
     }
-  }, [hoveredResult, iconConfig, map]);
+  }, [map, iconConfig, hoveredListResult]);
 
   return <>{children}</>;
 }
@@ -121,7 +136,7 @@ function setMapBoundsMarkers(
   map: google.maps.Map,
   markers: MarkerWithResultId[]
 ) {
-  const bounds = bbox({
+  const [swLat, swLng, neLat, neLng] = bbox({
     type: "LineString",
     coordinates: markers.map(({ marker }) => {
       const position = marker.getPosition();
@@ -130,10 +145,11 @@ function setMapBoundsMarkers(
   });
 
   const latLngBounds = new google.maps.LatLngBounds(
-    new google.maps.LatLng(bounds[0], bounds[1]),
-    new google.maps.LatLng(bounds[2], bounds[3])
+    new google.maps.LatLng(swLat, swLng),
+    new google.maps.LatLng(neLat, neLng)
   );
 
+  // Extra padding to account for Results list
   map.fitBounds(latLngBounds, 200);
   if (markers.length === 1) map.setZoom(15);
 }

@@ -1,8 +1,9 @@
 import styled from "styled-components";
-import { ResultType } from "../../data/sample-data";
 import ModalHeader from "./ModalHeader";
 import ModalBody from "./ModalBody";
 import ModalFooter from "./ModalFooter";
+import { useContext } from "react";
+import { ResultContext } from "../../contexts/ResultContext";
 
 const ModalBackground = styled.div`
   align-items: center;
@@ -31,15 +32,12 @@ const CloseButtonContainer = styled.div`
   top: 0;
 `;
 
-type ResultModalProps = {
-  onClose: () => void;
-  result: ResultType | null;
-};
+export default function ResultModal() {
+  const { modalResult: result, setModalResult } = useContext(ResultContext);
 
-export default function ResultModal({ onClose, result }: ResultModalProps) {
   if (!result) return null;
   return (
-    <ModalBackground onClick={onClose}>
+    <ModalBackground onClick={() => setModalResult(null)}>
       <ModalContainer onClick={(e) => e.stopPropagation()}>
         <ModalHeader result={result} />
         <ModalBody result={result} />

@@ -1,26 +1,6 @@
-import {
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useContext, useEffect, useState } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
-
-export const MapContext = createContext<{
-  map: google.maps.Map | null;
-  setMap: (map: google.maps.Map) => void;
-}>({ map: null, setMap: () => undefined });
-
-export function MapContextProvider({ children }: PropsWithChildren) {
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-
-  return (
-    <MapContext.Provider value={{ map, setMap }}>
-      {children}
-    </MapContext.Provider>
-  );
-}
+import { MapContext } from "../../contexts/GoogleMapContext";
 
 export default function GoogleMap() {
   const { setMap } = useContext(MapContext);

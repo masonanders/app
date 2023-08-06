@@ -24,6 +24,7 @@ type ImageProps = {
 /** If an image fails to load, this component renders `null` instead to prevent it from taking up space. */
 function Image({ alt, image }: ImageProps) {
   const [error, setError] = useState(false);
+
   if (error) return null;
   return <img alt={alt} src={image} onError={() => setError(true)} />;
 }

@@ -2,6 +2,8 @@ import styled from "styled-components";
 import { ResultType } from "../../data/sample-data";
 import { ResultCoords, ResultIcon, ResultTitle } from "../../components/Result";
 import transitions from "../../theme/transitions";
+import { useContext } from "react";
+import { ResultContext } from "../../contexts/ResultContext";
 
 const ResultContainer = styled.li`
   column-gap: 16px;
@@ -23,23 +25,18 @@ const ResultContainer = styled.li`
   }
 `;
 type ResultProps = {
-  onClick: (result: ResultType) => void;
-  onMouseOut: () => void;
-  onMouseOver: (result: ResultType) => void;
   result: ResultType;
 };
 
-export default function Result({
-  onClick,
-  onMouseOut,
-  onMouseOver,
-  result,
-}: ResultProps) {
+export default function Result({ result }: ResultProps) {
+  const { setFocusedMapResult, setHoveredListResult } =
+    useContext(ResultContext);
+
   return (
     <ResultContainer
-      onClick={() => onClick(result)}
-      onMouseOut={onMouseOut}
-      onMouseOver={() => onMouseOver(result)}
+      onClick={() => setFocusedMapResult(result)}
+      onMouseOut={() => setHoveredListResult(null)}
+      onMouseOver={() => setHoveredListResult(result)}
     >
       <ResultIcon />
       <ResultTitle result={result} />

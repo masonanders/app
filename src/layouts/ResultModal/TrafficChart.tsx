@@ -4,12 +4,8 @@ import capitalize from "../../utils/capitalize";
 import Chart from "chart.js/auto";
 import palette from "../../theme/palette";
 
-type TrafficChartProps = {
-  avgStoreTraffic: AvgStoreTraffic;
-};
-
 // Ordering here determines the ordering of the chart datapoints
-const dayList: (keyof AvgStoreTraffic)[] = [
+const DAY_LIST: (keyof AvgStoreTraffic)[] = [
   "sunday",
   "monday",
   "tuesday",
@@ -19,24 +15,30 @@ const dayList: (keyof AvgStoreTraffic)[] = [
   "saturday",
 ];
 
+type TrafficChartProps = {
+  avgStoreTraffic: AvgStoreTraffic;
+};
+
 export default function TrafficChart({ avgStoreTraffic }: TrafficChartProps) {
   const chartElRef = useRef<HTMLCanvasElement | null>(null);
-  const chartIdRef = useRef<string | null>(null);
+  // Track initialied state to prevent crash when React.StrictMode renders twice in dev env
+  const chartInitializedRef = useRef<boolean>(false);
 
   useEffect(() => {
     const chartEl = chartElRef.current;
-    const chartId = chartIdRef.current;
-    if (chartEl && chartId === null) {
+    const initialized = chartInitializedRef.current;
+
+    if (chartEl && !initialized) {
       const todayIdx = new Date().getDay();
 
-      const chart = new Chart(chartEl, {
+      new Chart(chartEl, {
         type: "bar",
         data: {
-          labels: dayList.map((day) => capitalize(day.slice(0, 3) + ".")),
+          labels: DAY_LIST.map((day) => capitalize(day.slice(0, 3) + ".")),
           datasets: [
             {
-              data: dayList.map((day) => avgStoreTraffic[day]),
-              backgroundColor: dayList.map((_, idx) =>
+              data: DAY_LIST.map((day) => avgStoreTraffic[day]),
+              backgroundColor: DAY_LIST.map((_, idx) =>
                 idx === todayIdx ? palette.secondary() : palette.primary()
               ),
               borderRadius: 4,
@@ -56,7 +58,7 @@ export default function TrafficChart({ avgStoreTraffic }: TrafficChartProps) {
               displayColors: false,
               callbacks: {
                 title: ([{ dataIndex }]) => {
-                  const day = dayList[dataIndex];
+                  const day = DAY_LIST[dataIndex];
                   let title = `${capitalize(day)}${
                     dataIndex === todayIdx ? " (today)" : ""
                   }`;
@@ -69,7 +71,8 @@ export default function TrafficChart({ avgStoreTraffic }: TrafficChartProps) {
           },
         },
       });
-      chartIdRef.current = chart.id;
+
+      chartInitializedRef.current = true;
     }
   }, [avgStoreTraffic]);
 

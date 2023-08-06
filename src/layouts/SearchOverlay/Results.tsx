@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import sampleData, { ResultType } from "../../data/sample-data";
 import Result from "./Result";
-import { useCallback, useMemo, useState } from "react";
+import { useMemo } from "react";
 import NoResult from "./NoResult";
 import ResultsMapManager from "./ResultsMapManager";
 import palette from "../../theme/palette";
@@ -43,11 +43,10 @@ const ResultsBody = styled.ul`
 `;
 
 type ResultsProps = {
-  onSelectResult: (result: ResultType) => void;
   searchValue: string;
 };
 
-export default function Results({ onSelectResult, searchValue }: ResultsProps) {
+export default function Results({ searchValue }: ResultsProps) {
   const results: ResultType[] = useMemo(
     () =>
       searchValue
@@ -61,31 +60,8 @@ export default function Results({ onSelectResult, searchValue }: ResultsProps) {
     [searchValue]
   );
 
-  const [focusedResult, setFocusedResult] = useState<ResultType | null>(null);
-  const [hoveredResult, setHoveredResult] = useState<ResultType | null>(null);
-
-  const handleSetFocusedResult = useCallback(
-    (result: ResultType) => setFocusedResult(result),
-    []
-  );
-
-  const handleSetHoveredResult = useCallback(
-    (result: ResultType) => setHoveredResult(result),
-    []
-  );
-
-  const handleClearHoveredResult = useCallback(
-    () => setHoveredResult(null),
-    []
-  );
-
   return (
-    <ResultsMapManager
-      onSelectResult={onSelectResult}
-      results={results}
-      focusedResult={focusedResult}
-      hoveredResult={hoveredResult}
-    >
+    <ResultsMapManager results={results}>
       {!!searchValue && (
         <ResultsContainer>
           <ResultsHeader>{`Found ${results.length} Result${
@@ -94,13 +70,7 @@ export default function Results({ onSelectResult, searchValue }: ResultsProps) {
           <ResultsBody>
             {results.length ? (
               results.map((result) => (
-                <Result
-                  key={result.id}
-                  onClick={handleSetFocusedResult}
-                  result={result}
-                  onMouseOver={handleSetHoveredResult}
-                  onMouseOut={handleClearHoveredResult}
-                />
+                <Result key={result.id} result={result} />
               ))
             ) : (
               <NoResult />
