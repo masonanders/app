@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { ResultType } from "../../data/sample-data";
 import { ResultCoords, ResultIcon, ResultTitle } from "../../components/Result";
-import transitions from "../../theme/transitions";
+import theme from "../../theme";
 import { useContext } from "react";
 import { ResultContext } from "../../contexts/ResultContext";
 
@@ -15,7 +15,7 @@ const ResultContainer = styled.li`
   grid-template-columns: 32px auto;
   row-gap: 8px;
 
-  transition: ${transitions.easeInOut({ property: "background-color" })};
+  transition: ${theme.transition.easeInOut({ property: "background-color" })};
 
   &:hover {
     background-color: ghostwhite;

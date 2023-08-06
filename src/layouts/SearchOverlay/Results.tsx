@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import NoResult from "./NoResult";
 import ResultsMapManager from "./ResultsMapManager";
 import palette from "../../theme/palette";
+import theme from "../../theme";
 
 const ResultsContainer = styled.div`
   background-color: white;
@@ -12,7 +13,7 @@ const ResultsContainer = styled.div`
   border-radius: 4px;
   border-style: solid;
   border-width: 1px;
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: ${theme.shadow.default};
   font-size: 0.875rem;
   margin-top: 24px;
   overflow: hidden;

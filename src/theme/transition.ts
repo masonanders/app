@@ -4,7 +4,7 @@ type Params = Partial<{
   property: string | string[];
 }>;
 
-const transitions = {
+const transition = {
   easeInOut: (params: Params = {}): string => {
     const { delay = 0, duration = 150, property = "all" } = params;
     return [
@@ -16,4 +16,4 @@ const transitions = {
   },
 };
 
-export default transitions;
+export default transition;

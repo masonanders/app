@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { ResultType } from "../../data/sample-data";
-import palette from "../../theme/palette";
-import transitions from "../../theme/transitions";
+import theme from "../../theme";
 import ResultInfo from "./ResultInfo";
 
 const HeaderContainer = styled.div`
@@ -11,10 +10,10 @@ const HeaderContainer = styled.div`
 `;
 
 const Button = styled.button`
-  background-color: ${palette.primary()};
+  background-color: ${theme.palette.primary()};
   border-radius: 4px;
   border: none;
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+  box-shadow: ${theme.shadow.default};
   color: white;
   cursor: pointer;
   font-size: 0.875rem;
@@ -23,14 +22,14 @@ const Button = styled.button`
   padding-left: 24px;
   padding-right: 24px;
 
-  transition: ${transitions.easeInOut({ property: "background-color" })};
+  transition: ${theme.transition.easeInOut({ property: "background-color" })};
 
   &:hover {
-    background-color: ${palette.primary("dark")};
+    background-color: ${theme.palette.primary("dark")};
   }
 
   &:active {
-    background-color: ${palette.primary("darker")};
+    background-color: ${theme.palette.primary("darker")};
   }
 `;
 

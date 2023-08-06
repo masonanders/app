@@ -1,7 +1,7 @@
 import styled, { StyledComponent } from "styled-components";
 import { ReactComponent as IconPinSVG } from "../assets/svg/icon-pin.svg";
 import { ResultType } from "../data/sample-data";
-import palette from "../theme/palette";
+import theme from "../theme";
 
 export const ResultIconContainer = styled.div`
   align-items: center;
@@ -10,7 +10,7 @@ export const ResultIconContainer = styled.div`
   justify-content: center;
 
   & svg {
-    fill: ${palette.primary()};
+    fill: ${theme.palette.primary()};
     height: 32px;
     width: 32px;
   }
