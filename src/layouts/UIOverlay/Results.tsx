@@ -62,16 +62,29 @@ export default function Results({ onSelectResult, searchValue }: ResultsProps) {
   );
 
   const [focusedResult, setFocusedResult] = useState<ResultType | null>(null);
+  const [hoveredResult, setHoveredResult] = useState<ResultType | null>(null);
 
-  const handleSetActiveResult = useCallback((result: ResultType) => {
-    setFocusedResult(result);
-  }, []);
+  const handleSetFocusedResult = useCallback(
+    (result: ResultType) => setFocusedResult(result),
+    []
+  );
+
+  const handleSetHoveredResult = useCallback(
+    (result: ResultType) => setHoveredResult(result),
+    []
+  );
+
+  const handleClearHoveredResult = useCallback(
+    () => setHoveredResult(null),
+    []
+  );
 
   return (
     <ResultsMapManager
       onSelectResult={onSelectResult}
       results={results}
       focusedResult={focusedResult}
+      hoveredResult={hoveredResult}
     >
       {!!searchValue && (
         <ResultsContainer>
@@ -83,8 +96,10 @@ export default function Results({ onSelectResult, searchValue }: ResultsProps) {
               results.map((result) => (
                 <Result
                   key={result.id}
-                  onClick={handleSetActiveResult}
+                  onClick={handleSetFocusedResult}
                   result={result}
+                  onMouseOver={handleSetHoveredResult}
+                  onMouseOut={handleClearHoveredResult}
                 />
               ))
             ) : (

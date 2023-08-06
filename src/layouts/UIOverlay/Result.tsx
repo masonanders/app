@@ -24,12 +24,23 @@ const ResultContainer = styled.li`
 `;
 type ResultProps = {
   onClick: (result: ResultType) => void;
+  onMouseOut: () => void;
+  onMouseOver: (result: ResultType) => void;
   result: ResultType;
 };
 
-export default function Result({ onClick, result }: ResultProps) {
+export default function Result({
+  onClick,
+  onMouseOut,
+  onMouseOver,
+  result,
+}: ResultProps) {
   return (
-    <ResultContainer onClick={() => onClick(result)}>
+    <ResultContainer
+      onClick={() => onClick(result)}
+      onMouseOut={onMouseOut}
+      onMouseOver={() => onMouseOver(result)}
+    >
       <ResultIcon />
       <ResultTitle result={result} />
       <ResultCoords result={result} />

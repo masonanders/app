@@ -13,50 +13,57 @@ import iconPin from "!raw-loader!../../assets/svg/icon-pin.svg";
 import palette from "../../theme/palette";
 
 type MapManagerProps = {
-  results: ResultType[];
   focusedResult: ResultType | null;
+  hoveredResult: ResultType | null;
   onSelectResult: (result: ResultType) => void;
+  results: ResultType[];
 };
 
+type MarkerWithResultId = { id: ResultType["id"]; marker: google.maps.Marker };
+
 export default function ResultsMapManager({
-  focusedResult,
   children,
+  focusedResult,
+  hoveredResult,
   onSelectResult,
   results,
 }: PropsWithChildren<MapManagerProps>) {
   const { map } = useContext(MapContext);
 
-  const markersRef = useRef<google.maps.Marker[]>([]);
+  const markersRef = useRef<MarkerWithResultId[]>([]);
 
   // Get path from raw svg - courtesy of https://stackoverflow.com/questions/57247916/how-to-access-path-data-of-an-svg-file-and-use-it-as-google-maps-marker
-  const pinIconSvgAttrs = useMemo<{
-    path: string;
-    height: number;
-    width: number;
-  } | null>(() => {
-    const parser = new DOMParser();
-    const parsedSvg = parser.parseFromString(iconPin, "image/svg+xml");
+  const iconConfig = useMemo<google.maps.Symbol | null>(() => {
+    if (map) {
+      const parser = new DOMParser();
+      const parsedSvg = parser.parseFromString(iconPin, "image/svg+xml");
 
-    const svgPath = parsedSvg.querySelector("path")?.getAttribute("d");
-    const svgWidth = parsedSvg.querySelector("svg")?.getAttribute("width");
-    const svgHeight = parsedSvg.querySelector("svg")?.getAttribute("height");
+      const svgPath = parsedSvg.querySelector("path")?.getAttribute("d");
+      const svgWidth = parsedSvg.querySelector("svg")?.getAttribute("width");
+      const svgHeight = parsedSvg.querySelector("svg")?.getAttribute("height");
 
-    if (svgPath != null && svgWidth != null && svgHeight != null) {
-      return {
-        path: svgPath,
-        width: Number(svgWidth),
-        height: Number(svgHeight),
-      };
-    } else {
-      return null;
+      if (svgPath != null && svgWidth != null && svgHeight != null) {
+        const width = Number(svgWidth);
+        const height = Number(svgHeight);
+
+        return {
+          anchor: new google.maps.Point(width / 2, height),
+          fillColor: palette.primary(),
+          fillOpacity: 1,
+          path: svgPath,
+          scale: 2.25,
+          strokeWeight: 0,
+        };
+      }
     }
-  }, []);
+    return null;
+  }, [map]);
 
   useEffect(() => {
     if (map) {
       const markers = markersRef.current;
 
-      markers.forEach((marker) => marker.setMap(null));
+      markers.forEach(({ marker }) => marker.setMap(null));
 
       const newMarkers = results.map((result) => {
         const position = new google.maps.LatLng(
@@ -66,27 +73,14 @@ export default function ResultsMapManager({
 
         const marker = new google.maps.Marker({
           position,
+          icon: iconConfig,
         });
 
         marker.addListener("click", () => onSelectResult(result));
-
-        if (pinIconSvgAttrs)
-          marker.setIcon({
-            fillColor: palette.primary(),
-            fillOpacity: 1,
-            strokeWeight: 0,
-            scale: 2.25,
-            path: pinIconSvgAttrs.path,
-            anchor: new google.maps.Point(
-              pinIconSvgAttrs.width / 2,
-              pinIconSvgAttrs.height
-            ),
-          });
-
         marker.setMap(map);
 
-        return marker;
-      });
+        return { id: result.id, marker };
+      }, {});
 
       if (newMarkers.length) {
         setMapBoundsMarkers(map, newMarkers);
@@ -94,28 +88,42 @@ export default function ResultsMapManager({
 
       markersRef.current = newMarkers;
     }
-  }, [results, map, pinIconSvgAttrs, onSelectResult]);
+  }, [results, map, iconConfig, onSelectResult]);
 
   useEffect(() => {
     if (map) {
+      const markersList = Object.values(markersRef.current);
       if (focusedResult) {
         setMapBoundsResult(map, focusedResult);
-      } else if (markersRef.current.length) {
-        setMapBoundsMarkers(map, markersRef.current);
+      } else if (markersList.length) {
+        setMapBoundsMarkers(map, markersList);
       }
     }
   }, [map, focusedResult]);
+
+  useEffect(() => {
+    if (map && iconConfig) {
+      const markers = markersRef.current;
+      markers.forEach(({ id, marker }) =>
+        marker.setIcon({
+          ...iconConfig,
+          fillColor:
+            id === hoveredResult?.id ? palette.secondary() : palette.primary(),
+        })
+      );
+    }
+  }, [hoveredResult, iconConfig, map]);
 
   return <>{children}</>;
 }
 
 function setMapBoundsMarkers(
   map: google.maps.Map,
-  markers: google.maps.Marker[]
+  markers: MarkerWithResultId[]
 ) {
   const bounds = bbox({
     type: "LineString",
-    coordinates: markers.map((marker) => {
+    coordinates: markers.map(({ marker }) => {
       const position = marker.getPosition();
       return [position?.lat(), position?.lng()];
     }),
