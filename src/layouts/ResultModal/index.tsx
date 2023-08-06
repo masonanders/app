@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { ResultType } from "../../data/sample-data";
 import ModalHeader from "./ModalHeader";
 import ModalBody from "./ModalBody";
+import ModalFooter from "./ModalFooter";
 
 const ModalBackground = styled.div`
   align-items: center;
@@ -42,6 +43,7 @@ export default function ResultModal({ onClose, result }: ResultModalProps) {
       <ModalContainer onClick={(e) => e.stopPropagation()}>
         <ModalHeader result={result} />
         <ModalBody result={result} />
+        <ModalFooter result={result} />
       </ModalContainer>
       <CloseButtonContainer>&#x2715;</CloseButtonContainer>
     </ModalBackground>

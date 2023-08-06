@@ -1,3 +1,13 @@
+export type AvgStoreTraffic = {
+  monday: number | null;
+  tuesday: number | null;
+  wednesday: number | null;
+  thursday: number | null;
+  friday: number | null;
+  saturday: number | null;
+  sunday: number | null;
+};
+
 export type ResultType = {
   id: number;
   name: string;
@@ -8,15 +18,7 @@ export type ResultType = {
   details?: {
     description: string;
     website?: string;
-    avgStoreTraffic?: {
-      monday: number | null;
-      tuesday: number | null;
-      wednesday: number | null;
-      thursday: number | null;
-      friday: number | null;
-      saturday: number | null;
-      sunday: number | null;
-    };
+    avgStoreTraffic?: AvgStoreTraffic;
   };
   images?: string[];
 };
