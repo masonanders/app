@@ -48,18 +48,23 @@ type ResultsProps = {
 };
 
 export default function Results({ searchValue }: ResultsProps) {
-  const results: ResultType[] = useMemo(
-    () =>
-      searchValue
-        ? sampleData.filter(({ name }) =>
-            name
-              .toLocaleLowerCase()
-              .split(" ")
-              .some((word) => word.startsWith(searchValue.toLocaleLowerCase()))
-          )
-        : [],
-    [searchValue]
-  );
+  const results: ResultType[] = useMemo(() => {
+    if (searchValue) {
+      return sampleData.filter(({ name }) => {
+        const normalizedName = name.toLocaleLowerCase();
+        const normalizedSearchValue = searchValue.toLocaleLowerCase();
+
+        if (normalizedSearchValue.includes(" ")) {
+          return normalizedName.includes(normalizedSearchValue);
+        } else {
+          return normalizedName
+            .split(" ")
+            .some((word) => word.startsWith(normalizedSearchValue));
+        }
+      });
+    }
+    return [];
+  }, [searchValue]);
 
   return (
     <ResultsMapManager results={results}>
