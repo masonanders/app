@@ -16,29 +16,43 @@ const ImageCarouselContainer = styled.div`
   }
 `;
 
-type ImageProps = {
-  alt: string;
-  image: string;
-};
-
-/** If an image fails to load, this component renders `null` instead to prevent it from taking up space. */
-function Image({ alt, image }: ImageProps) {
-  const [error, setError] = useState(false);
-
-  if (error) return null;
-  return <img alt={alt} src={image} onError={() => setError(true)} />;
-}
-
 type ImageCarouselProps = {
   result: ResultType;
 };
 
+/** Tracks `img` load-state and hides individual `img` if error or pending.
+ *  Renders null if no images or all images error out to prevent reserving space for an empty `div`. */
 export default function ImageCarousel({ result }: ImageCarouselProps) {
-  if (!result.images?.length) return null;
+  const [imgLoadState, setImgLoadState] = useState<
+    ("pending" | "loaded" | "error")[]
+  >(new Array(result.images?.length ?? 0).fill("pending"));
+
+  if (
+    !result.images?.length ||
+    imgLoadState.every((state) => state === "error")
+  )
+    return null;
   return (
     <ImageCarouselContainer>
       {result.images.map((image, idx) => (
-        <Image key={idx} alt={`${result.name}-${idx}`} image={image} />
+        <img
+          key={idx}
+          alt={`${result.name}-${idx}`}
+          src={image}
+          onError={() =>
+            setImgLoadState((prev) =>
+              prev.map((state, i) => (i === idx ? "error" : state))
+            )
+          }
+          onLoad={() =>
+            setImgLoadState((prev) =>
+              prev.map((state, i) => (i === idx ? "loaded" : state))
+            )
+          }
+          {...(imgLoadState[idx] !== "loaded" && {
+            style: { display: "none" },
+          })}
+        />
       ))}
     </ImageCarouselContainer>
   );
