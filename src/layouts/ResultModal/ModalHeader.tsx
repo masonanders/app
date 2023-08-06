@@ -8,6 +8,7 @@ import {
 } from "../../components/Result";
 import { ResultType } from "../../data/sample-data";
 import palette from "../../theme/palette";
+import transitions from "../../theme/transitions";
 
 const HeaderContainer = styled.div`
   display: flex;
@@ -46,6 +47,8 @@ const Button = styled.button`
   letter-spacing: 0.025rem;
   padding-left: 24px;
   padding-right: 24px;
+
+  transition: ${transitions.easeInOut({ property: "background-color" })};
 
   &:hover {
     background-color: ${palette.primary("dark")};

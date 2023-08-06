@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { ResultType } from "../../data/sample-data";
 import { ResultCoords, ResultIcon, ResultTitle } from "../../components/Result";
+import transitions from "../../theme/transitions";
 
 const ResultContainer = styled.li`
   column-gap: 16px;
@@ -11,6 +12,8 @@ const ResultContainer = styled.li`
     "icon coord";
   grid-template-columns: 32px auto;
   row-gap: 8px;
+
+  transition: ${transitions.easeInOut({ property: "background-color" })};
 
   &:hover {
     background-color: ghostwhite;
