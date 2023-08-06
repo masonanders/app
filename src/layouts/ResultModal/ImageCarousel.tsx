@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import { ResultType } from "../../data/sample-data";
-import { useState } from "react";
+import { useRef } from "react";
+import loading from "../../assets/svg/loading.svg";
+import brokenFile from "../../assets/svg/broken-file.svg";
 
 const ImageCarouselContainer = styled.div`
   column-gap: 8px;
@@ -9,6 +11,7 @@ const ImageCarouselContainer = styled.div`
   flex-direction: row-reverse;
   justify-content: flex-end;
   overflow-x: auto;
+  min-height: 144px;
 
   & > img {
     object-fit: cover;
@@ -16,42 +19,40 @@ const ImageCarouselContainer = styled.div`
   }
 `;
 
+type ImageWithFallbackProps = Pick<HTMLImageElement, "src" | "alt">;
+
+/** Renders animation while loding `src`. If `src` fails to load, renders a fallback SVG file. */
+function ImageWithFallback({ src, alt }: ImageWithFallbackProps) {
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  return (
+    <img
+      ref={imgRef}
+      alt={alt}
+      src={src}
+      style={{ backgroundImage: `url(${loading})` }}
+      onError={() => {
+        if (imgRef.current) {
+          imgRef.current.src = brokenFile;
+          imgRef.current.style.backgroundImage = "";
+        }
+      }}
+    />
+  );
+}
+
 type ImageCarouselProps = {
   result: ResultType;
 };
 
-/** Tracks `img` load-state and hides individual `img` if error or pending.
- *  Renders null if no images or all images error out to prevent reserving space for an empty `div`. */
 export default function ImageCarousel({ result }: ImageCarouselProps) {
-  const [imgLoadState, setImgLoadState] = useState<
-    ("pending" | "loaded" | "error")[]
-  >(new Array(result.images?.length ?? 0).fill("pending"));
-
-  if (
-    !result.images?.length ||
-    imgLoadState.every((state) => state === "error")
-  )
-    return null;
+  if (!result.images?.length) return null;
   return (
     <ImageCarouselContainer>
       {result.images.map((image, idx) => (
-        <img
+        <ImageWithFallback
           key={idx}
           alt={`${result.name}-${idx}`}
           src={image}
-          onError={() =>
-            setImgLoadState((prev) =>
-              prev.map((state, i) => (i === idx ? "error" : state))
-            )
-          }
-          onLoad={() =>
-            setImgLoadState((prev) =>
-              prev.map((state, i) => (i === idx ? "loaded" : state))
-            )
-          }
-          {...(imgLoadState[idx] !== "loaded" && {
-            style: { display: "none" },
-          })}
         />
       ))}
     </ImageCarouselContainer>
